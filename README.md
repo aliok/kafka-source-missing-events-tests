@@ -2,6 +2,50 @@
 
 Created for https://issues.redhat.com/browse/SRVKE-927
 
+## Info
+
+
+```
+┌────────────────┐
+│                │
+│  sender        │
+│                │
+└──────┬─────────┘
+       │
+       │
+┌──────▼─────────┐
+│                │
+│  Kafka topic   │
+│                │
+└──────┬─────────┘
+       │
+       │
+       │
+┌──────▼────────┐
+│               │
+│  Kafka source │
+│               │
+└──────┬────────┘
+       │
+       │
+       │
+┌──────▼────────┐
+│               │
+│  receiver     │
+│               │
+└───────────────┘
+```
+
+- Sender talks to Kafka directly
+- Kafka source fetches the messages from Kafka and sends them to the receiver
+
+
+The test is:
+- Send events continuously over the pipeline
+- Kill KafkaSource adapter pods and see what happens
+
+## Instructions
+
 Install 0.23 stuff:
 ```bash
 ./hack/0.23/01-kn-serving.sh

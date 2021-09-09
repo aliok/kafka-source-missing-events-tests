@@ -1,4 +1,4 @@
-# Kafka Channel reload tests
+# Kafka Source missing events tests
 
 Created for https://issues.redhat.com/browse/SRVKE-927
 

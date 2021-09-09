@@ -1,7 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const RECEIVE_DURATION = 3 * 60 * 1000; // N mins
+let receiveDuration = process.env['RECEIVE_DURATION'];
+if (!receiveDuration) {
+    console.log("RECEIVE_DURATION env var is not defined");
+    process.exit();
+}
+// ignore exceptions
+receiveDuration = parseInt(receiveDuration, 10);
 
 const app = express();
 
@@ -12,20 +18,21 @@ app.use(bodyParser.raw({
 }));
 
 let receivedMessageCount = 0;
-let startTime = new Date().getTime();
 
 app.all('*', function (req, res) {
+    if (receivedMessageCount === 0) {
+        setTimeout(function () {
+            // keep the server running. timing of sender should be adjusted properly
+            // app.disable()
+            console.log("Total received message count: " + receivedMessageCount);
+        }, receiveDuration);
+    }
     console.log("Received message: " + String(req.body));
     receivedMessageCount++;
 
     res.status(202).send('');
 });
 
-setTimeout(function () {
-    // keep the server running. timing of sender should be adjusted properly
-    // app.disable()
-    console.log("Total received message count: " + receivedMessageCount);
-}, RECEIVE_DURATION);
 
 app.listen(8080, () => {
     console.log('https://github.com/aliok/request-logger');

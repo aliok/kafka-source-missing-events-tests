@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cloudevents-sdk": "^2.0.1"
+    "kafka-node": "^5.0.0"
   }
 }

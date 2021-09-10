@@ -56,7 +56,10 @@ Install 0.23 stuff:
 
 Install 0.24 stuff:
 ```bash
-TODO
+./hack/0.24/01-kn-serving.sh
+./hack/0.24/02-kn-eventing.sh
+./hack/0.24/03-strimzi.sh
+./hack/0.24/04-kn-kafka.sh
 ```
 
 Create receiver and the source:

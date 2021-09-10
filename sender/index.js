@@ -56,7 +56,7 @@ producer.on('ready', function (err) {
 
             producer.send([{
                 topic: kafkaTopic,
-                messages: 'hello ' + eventIndex
+                messages: '' + eventIndex
             }], function (err) {
                 if (err) {
                     console.log('Error sending message ');

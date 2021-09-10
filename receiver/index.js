@@ -18,13 +18,21 @@ app.use(bodyParser.raw({
 }));
 
 let receivedMessageCount = 0;
+let latestEventIndex = 0;
+const receivedMessages = [];
 
 app.all('*', function (req, res) {
+    latestEventIndex = req.body.toString('utf8');
+    if (receivedMessages[latestEventIndex]) {
+        receivedMessages[latestEventIndex] = receivedMessages[latestEventIndex] + 1;
+    } else {
+        receivedMessages[latestEventIndex] = 1;
+    }
     if (receivedMessageCount === 0) {
         setTimeout(function () {
+            console.log("Receiving duration has passed!");
             // keep the server running. timing of sender should be adjusted properly
-            // app.disable()
-            console.log("Total received message count: " + receivedMessageCount);
+            doAnalysis();
         }, receiveDuration);
     }
     console.log("Received message: " + String(req.body));
@@ -32,6 +40,38 @@ app.all('*', function (req, res) {
 
     res.status(202).send('');
 });
+
+function doAnalysis() {
+    const missingMessages = findMissingMessages();
+    const duplicateMessagesWithCounts = findDuplicateMessagesWithCounts();
+
+    console.log("Total received message count: " + receivedMessageCount);
+    console.log("Latest message index: " + latestEventIndex);
+    console.log("Missing messages count: " + missingMessages.length);
+    console.log("Missing messages: " + missingMessages);
+    console.log("Duplicate messages: " + JSON.stringify(duplicateMessagesWithCounts));
+}
+
+function findMissingMessages() {
+    const misses = [];
+    // first event starts from 1
+    for (let i = 1; i <= latestEventIndex; i++) {
+        if (!receivedMessages[i]) {
+            misses.push(i);
+        }
+    }
+    return misses;
+}
+
+function findDuplicateMessagesWithCounts() {
+    const res = {};
+    for (let i = 0; i <= latestEventIndex; i++) {
+        if (receivedMessages[i] && receivedMessages[i] > 1) {
+            res[i] = receivedMessages[i];
+        }
+    }
+    return res;
+}
 
 
 app.listen(8080, () => {
@@ -47,6 +87,12 @@ function registerGracefulExit() {
         console.log("Exiting");
         process.exit();
     };
+
+    process.on('uncaughtException', function (err) {
+        console.error((new Date).toUTCString() + ' uncaughtException:', err.message)
+        console.error(err.stack)
+        logExit();
+    })
 
     // handle graceful exit
     //do something when app is closing

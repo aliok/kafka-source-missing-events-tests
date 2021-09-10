@@ -8,6 +8,7 @@ if (!receiveDuration) {
 }
 // ignore exceptions
 receiveDuration = parseInt(receiveDuration, 10);
+console.log("receiveDuration: " + receiveDuration);
 
 const app = express();
 
